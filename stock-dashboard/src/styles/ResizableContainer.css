@@ -1,0 +1,8 @@
+/* ResizableContainer.css */
+.resizable-container {
+    resize: both;
+    overflow: auto;
+    border: 1px solid #ccc;
+    padding: 10px;
+  }
+  
