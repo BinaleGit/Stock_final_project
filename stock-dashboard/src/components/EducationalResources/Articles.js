@@ -1,81 +1,54 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 
 const Articles = () => {
     const [articles, setArticles] = useState([]);
-    const [page, setPage] = useState(1);
-    const [limit] = useState(10);
     const [query, setQuery] = useState('');
     const [loading, setLoading] = useState(false);
-    const [totalArticles, setTotalArticles] = useState(0);
 
-    const fetchArticles = useCallback((page = 1, query = '') => {
-        setLoading(true);
-        axios.get(`http://localhost:5000/api/edu/articles`, {
-            params: { page, limit, query }
-        })
-            .then(response => {
-                setArticles(prevArticles => (page === 1 ? response.data.articles : [...prevArticles, ...response.data.articles]));
-                setTotalArticles(response.data.total_articles);
-                setPage(page);
-            })
-            .catch(error => {
-                console.error('Error fetching articles:', error);
-            })
-            .finally(() => {
-                setLoading(false);
-            });
-    }, [limit]);
-
-    useEffect(() => {
-        fetchArticles(1, query);
-    }, [fetchArticles, query]);
-
-    const loadMoreArticles = () => {
-        fetchArticles(page + 1, query);
-    };
-
-    const handleSearch = (e) => {
+    const handleSearch = async (e) => {
         e.preventDefault();
-        setArticles([]); // Clear current articles
-        fetchArticles(1, query);
+        setLoading(true);
+        try {
+            const response = await axios.get('http://localhost:5000/api/edu/articles', {
+                params: { query }
+            });
+            setArticles(response.data.articles);
+        } catch (error) {
+            console.error('Error fetching articles:', error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
-        <div>
+        <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
             <h1>Articles</h1>
-            <form onSubmit={handleSearch}>
+            <form onSubmit={handleSearch} style={{ marginBottom: '20px' }}>
                 <input 
                     type="text" 
-                    placeholder="Search articles by company name" 
+                    placeholder="Search articles" 
                     value={query} 
                     onChange={(e) => setQuery(e.target.value)} 
+                    style={{ padding: '10px', fontSize: '16px', width: '300px', marginRight: '10px' }}
                 />
-                <button type="submit">Search</button>
+                <button type="submit" style={{ padding: '10px', fontSize: '16px' }}>Search</button>
             </form>
-            <ul>
+            {loading && <p>Loading...</p>}
+            <ul style={{ listStyle: 'none', padding: 0 }}>
                 {articles.map((article, index) => (
-                    <li key={index}>
-                        <div>
-                            {article.image && 
-                                <a href={article.url} target="_blank" rel="noopener noreferrer">
-                                    <img src={article.image} alt={article.title} style={{ maxWidth: '100px' }} />
-                                </a>
-                            }
-                            <h2>{article.title}</h2>
-                            <p>{article.description}</p>
-                            <p>Names mentioned: {article.names ? article.names.join(', ') : 'None'}</p>
-                            <p>
-                                <a href={article.url} target="_blank" rel="noopener noreferrer" style={{ color: 'blue', textDecoration: 'underline' }}>
-                                    Read more
-                                </a>
-                            </p>
-                        </div>
+                    <li key={index} style={{ marginBottom: '20px', padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }}>
+                        <div style={{ fontWeight: 'bold', color: '#555', marginBottom: '5px' }}>{article.source}</div>
+                        <h2 style={{ fontSize: '18px', margin: '0 0 10px' }}>{article.title}</h2>
+                        <p style={{ fontSize: '14px', color: '#333' }}>{article.description}</p>
+                        <p>
+                            <a href={article.url} target="_blank" rel="noopener noreferrer" style={{ color: 'blue', textDecoration: 'underline' }}>
+                                Read more
+                            </a>
+                        </p>
                     </li>
                 ))}
             </ul>
-            {loading && <p>Loading...</p>}
-            {articles.length < totalArticles && <button onClick={loadMoreArticles} disabled={loading}>Load More</button>}
         </div>
     );
 };

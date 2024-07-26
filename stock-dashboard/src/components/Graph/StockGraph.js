@@ -91,7 +91,7 @@ const StockGraph = () => {
           <option value="first">Show the first graph</option>
           <option value="second">Show the second graph</option>
           <option value="both">Show both graphs</option>
-          {/* <option value="tradingview">Show TradingView Widget</option> Add new option */}
+          <option value="tradingview">Show TradingView Widget</option> Add new option
         </select>
       </div>
       <div className="graph-container">

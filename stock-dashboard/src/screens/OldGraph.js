@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from 'recharts';
+import { ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid, ComposedChart, Bar } from 'recharts';
 import { saveAs } from 'file-saver';
 import Loader from '../components/Loader';
 
@@ -15,6 +15,7 @@ const OldGraph = () => {
   const [suggestions, setSuggestions] = useState([]);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
+  const [timeline, setTimeline] = useState('1y'); // Add state for timeline
 
   const fetchSuggestions = async (input) => {
     try {
@@ -46,29 +47,88 @@ const OldGraph = () => {
       const response = await axios.get(`http://localhost:5000/api/graph/${symbol}`, {
         params: {
           startDate: startDate.toISOString().split('T')[0],
-          endDate: endDate.toISOString().split('T')[0]
+          endDate: endDate.toISOString().split('T')[0],
+          timeline // Pass timeline to backend
         }
       });
+      console.log('Data fetched:', response.data); // Check data here
       setData(response.data);
     } catch (error) {
       setError(error.message);
+      console.error('Error fetching data:', error);
     }
-  }, [symbol, startDate, endDate]);
+  }, [symbol, startDate, endDate, timeline]); // Include timeline in dependencies
 
   useEffect(() => {
-    const fetchDataAndUpdate = async () => {
-      await fetchData();
-    };
-
-    fetchDataAndUpdate();
-    const interval = setInterval(fetchDataAndUpdate, 60000);
-
+    fetchData();
+    const interval = setInterval(fetchData, 60000);
     return () => clearInterval(interval);
   }, [fetchData]);
 
-  if (error) {
-    return <div className="text-red-500">Error fetching data: {error}</div>;
-  }
+  const handleTimelineChange = (period) => {
+    setTimeline(period);
+    const now = new Date();
+    let newStartDate;
+
+    switch (period) {
+        case '1y':
+            newStartDate = new Date(now.setFullYear(now.getFullYear() - 1));
+            break;
+        case '6m':
+            newStartDate = new Date(now.setMonth(now.getMonth() - 6));
+            break;
+        case '10d':
+            newStartDate = new Date(now.setDate(now.getDate() - 10));
+            break;
+        default:
+            return;
+    }
+
+    setStartDate(newStartDate);
+    setEndDate(new Date());
+  };
+
+  const formatDollar = (value) => `$${value.toFixed(2)}`;
+
+  const CustomTooltip = ({ payload, label }) => {
+    if (!payload || !payload.length) return null;
+
+    const data = payload[0].payload;
+
+    return (
+      <div className="custom-tooltip">
+        <p>{label}</p>
+        <p style={{ color: 'red' }}>Low: {formatDollar(data.Low)}</p>
+        <p style={{ color: 'green' }}>High: {formatDollar(data.High)}</p>
+        <p style={{ color: 'orange' }}>Close: {formatDollar(data.Close)}</p>
+        <p style={{ color: 'blue' }}>Open: {formatDollar(data.Open)}</p>
+      </div>
+    );
+  };
+
+  const CustomBar = ({ x, y, width, height, fill, stroke, payload }) => {
+    // Calculate Y positions based on the height of the bar and the data values
+    const openY = y + height - (height * ((payload.Open - payload.Low) / (payload.High - payload.Low)));
+    const closeY = y + height - (height * ((payload.Close - payload.Low) / (payload.High - payload.Low)));
+    const highY = y + height - (height * ((payload.High - payload.Low) / (payload.High - payload.Low)));
+    const lowY = y + height - (height * ((payload.Low - payload.Low) / (payload.High - payload.Low)));
+  
+    return (
+      <g>
+      <rect x={x} y={y} width={width} height={height} fill={fill} stroke={stroke} />
+      {/* High and Low lines */}
+      <line x1={x} x2={x + width} y1={highY} y2={highY} stroke="green" strokeWidth={2} />
+      <line x1={x} x2={x + width} y1={lowY} y2={lowY} stroke="red" strokeWidth={2} />
+      {/* Vertical line for High to Low range */}
+      <line x1={x + width / 2} x2={x + width / 2} y1={lowY} y2={highY} stroke="#000" strokeWidth={1.5} />
+      {/* Open and Close lines */}
+      <line x1={x} x2={x + width} y1={openY} y2={openY} stroke="blue" strokeWidth={2} />
+      <line x1={x} x2={x + width} y1={closeY} y2={closeY} stroke="orange" strokeWidth={2} />
+    </g>
+  );
+};
+  
+  
 
   const renderGraph = () => {
     if (!data) {
@@ -84,26 +144,23 @@ const OldGraph = () => {
       Volume: showDiff ? data.VolumeDiff[index] : data.Volume[index]
     }));
 
-    const formatDollar = (value) => `$${value.toFixed(2)}`;
-
-    const latestDate = data.Date[data.Date.length - 1];
-
     return (
       <div className="animate-fadeIn">
-        <h2 className="text-2xl font-bold mb-4 text-primary">Old Stock Graph - {latestDate}</h2>
+        <h2 className="text-2xl font-bold mb-4 text-primary">Stock Graph - {data.Date[data.Date.length - 1]}</h2>
         <div className="w-full h-96">
           <ResponsiveContainer>
-            <LineChart data={chartData}>
+            <ComposedChart data={chartData}>
               <XAxis dataKey="Date" />
               <YAxis tickFormatter={formatDollar} />
-              <Tooltip formatter={(value) => formatDollar(value)} />
+              <Tooltip content={<CustomTooltip />} />
               <CartesianGrid stroke="#333" />
-              <Line type="monotone" dataKey="Close" stroke="#ff7300" />
-              <Line type="monotone" dataKey="Open" stroke="#00ff00" />
-              <Line type="monotone" dataKey="High" stroke="#0000ff" />
-              <Line type="monotone" dataKey="Low" stroke="#ff0000" />
-              <Line type="monotone" dataKey="Volume" stroke="#000000" />
-            </LineChart>
+              <Bar
+                dataKey="Volume"
+                shape={<CustomBar />}
+                fill="#8884d8"
+                stroke="#8884d8"
+              />
+            </ComposedChart>
           </ResponsiveContainer>
         </div>
       </div>
@@ -163,7 +220,9 @@ const OldGraph = () => {
             onChange={(date) => setStartDate(date)}
             className="block w-full border border-gray-600 rounded-md p-2 bg-dark-bg text-dark-text"
           />
-          <label className="block mb-2 mt-4">End Date:</label>
+        </div>
+        <div>
+          <label className="block mb-2">End Date:</label>
           <DatePicker
             selected={endDate}
             onChange={(date) => setEndDate(date)}
@@ -171,23 +230,34 @@ const OldGraph = () => {
           />
         </div>
       </div>
-      <div className="flex flex-col md:flex-row items-center mb-4">
+      <div className="mb-4">
         <button
-          onClick={() => setShowDiff(!showDiff)}
-          className="button-blue mb-4 md:mb-0 md:mr-2 w-full md:w-auto"
+          onClick={() => handleTimelineChange('1y')}
+          className="btn btn-primary mr-2"
         >
-          {showDiff ? 'Show Actual Values' : 'Show Day Differences'}
+          1 Year
         </button>
         <button
-          onClick={generateBIReport}
-          className="button-green mb-4 md:mb-0 md:ml-2 w-full md:w-auto"
+          onClick={() => handleTimelineChange('6m')}
+          className="btn btn-primary mr-2"
         >
-          Generate BI Report
+          6 Months
+        </button>
+        <button
+          onClick={() => handleTimelineChange('10d')}
+          className="btn btn-primary mr-2"
+        >
+          10 Days
         </button>
       </div>
-      <div className="resizable-container mb-4">
-        {renderGraph()}
-      </div>
+      <button
+        onClick={generateBIReport}
+        className="btn btn-primary"
+      >
+        Generate BI Report
+      </button>
+      <div className="mt-4">{renderGraph()}</div>
+      {data === null && <Loader />}
     </div>
   );
 };
