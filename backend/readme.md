@@ -1,111 +1,140 @@
-# Project Name
+# Yahoo FA Graf Search
 
-## Overview
-
-This project is a comprehensive stock data application built using Flask for the backend API. It focuses on retrieving, storing, and analyzing stock information. The application includes functionality for web scraping to gather stock symbols from various sources and provides RESTful API endpoints for accessing detailed stock data.
+**Yahoo FA Graf Search** is an application designed to retrieve, visualize, and analyze stock data, integrating educational resources and real-time news. It features a Flask backend for API services and a React frontend for user interaction.
 
 ## Project Structure
 
-- **app.py**: Main entry point for the Flask application. Initializes routes and manages API requests.
-- **enums.py**: Defines enums for categorizing stock markets and data sources used throughout the application.
-- **suggestion_routes.py**: Handles API routes for suggesting stocks based on user input.
-- **stock_routes.py**: Manages API routes for detailed stock information, search functionality, and fetching all stocks in the database.
-- **rest_routes.py**: Provides RESTful API endpoints for retrieving detailed stock data.
-- **graph_routes.py**: Manages API routes for fetching historical stock data to facilitate graphical representation and analysis.
-- **stock_model.py**: Implements functionality for fetching and storing stock symbols from indices like S&P 500 and TA-125.
-- **file_scraper/**:
-  - **tase_scraper.py**: Script to scrape TASE (Tel Aviv Stock Exchange) stock symbols from Wikipedia.
-  - **sp500_scraper.py**: Script to scrape S&P 500 stock symbols from Wikipedia.
-  - **stock_service.py**: Manages stock symbols and data retrieval, including CSV handling.
+### Backend
 
-## Usage
+The backend is organized as follows:
 
-### Running the Flask App
+- **`/file_scraper`**: Contains scripts for scraping stock data and services.
+  - `sp500_scraper.py`: Scrapes data from the S&P 500 index.
+  - `stock_service.py`: Service script for handling stock-related operations.
+  - `tase_scraper.py`: Scrapes data from the Tel Aviv Stock Exchange.
 
-To run the Flask application, follow these steps:
+- **`/models`**: Includes data models and database operations.
+  - `stock_model.py`: Defines data models and database interactions for stock data.
 
-1. Ensure all dependencies are installed. See the Dependencies section for details.
-2. Navigate to the project directory containing `app.py`.
-3. Run the following command:
+- **`/NEWS`**: Contains news scraping functionalities.
+  - `scraper_factory.py`: Factory for creating news scrapers based on the source.
 
-   ```bash
-   python app.py
+- **`/routes`**: Contains API endpoints.
+  - `edu_routes.py`: Endpoints for educational resources.
+  - `graph_routes.py`: Endpoints for stock data graphs and reports.
+  - `rest_routes.py`: General stock information endpoints.
+  - `stock_routes.py`: Detailed stock information and search functionalities.
+  - `suggestion_routes.py`: Endpoints for stock suggestions based on user input.
 
+- **`/test`**: Contains unit tests for the backend.
+  - `test_routes.py`: Tests for news-related endpoints and cache management.
+  - `test_yfinance.py`: Tests for stock data retrieval.
 
-### Test stock
-curl -X GET http://localhost:5000/api/stock/all_stocks
-curl -X GET http://localhost:5000/api/stock/AAPL
-curl -X GET "http://localhost:5000/api/stock/search?q=AAPL"
+- **`app.py`**: Main application setup, including route registration and background tasks for scraping and updating news.
 
-### Test articles
-curl http://127.0.0.1:5000/api/edu/articles?source=google
-curl http://127.0.0.1:5000/api/edu/articles?source=yahoo
-curl http://127.0.0.1:5000/api/edu/articles?source=all
+- **`enums.py`**: Defines enums for stock markets, data sources, news sources, and search modes.
 
+- **`requirements.txt`**: Lists the required Python packages.
 
-# Dependencies
+### Frontend
 
-- **Flask**: Web framework for building APIs.
-- **Pandas**: Data manipulation library.
-- **yfinance**: Yahoo Finance API for fetching stock data.
-- **Beautiful Soup**: Python library for web scraping.
-- **Requests**: HTTP library for making requests.
-- **SQLAlchemy**: SQL toolkit and Object-Relational Mapping (ORM) for database operations.
+The frontend is built with React and includes:
 
-# Files and Their Functions
+- **`/public`**: Contains static assets.
+  - `index.html`: Main HTML file.
+  - Other static files such as images and icons.
 
-## app.py
+- **`/src`**: Contains the React source code.
+  - **`/components`**: React components for various UI elements.
+    - **`/EducationalResources`**: Components for articles, glossary, tutorials, and videos.
+    - **`/Graph`**: Components for displaying stock graphs.
+    - Other components like filters, footers, headers, etc.
+  - **`/screens`**: Different screens or pages of the application.
+  - **`/styles`**: CSS and style-related files.
+  - `App.js`: Main application component.
+  - `Routes.js`: Defines the application routes.
 
-Main entry point for the Flask application. Initializes the Flask app, sets up routes, and handles API requests and responses related to stock data.
+- **`package.json`**: Lists the required Node.js packages.
+- **`package-lock.json`**: Ensures consistent dependency installation.
+- **`postcss.config.js`**: Configuration for PostCSS.
+- **`tailwind.config.js`**: Configuration for Tailwind CSS.
 
-## enums.py
+## Setup and Installation
 
-Defines enums that categorize stock markets and data sources used within the application. These enums help maintain consistency and clarity throughout the codebase.
+### Backend
 
-## suggestion_routes.py
+1. **Clone the Repository**
 
-Contains API routes for suggesting stocks based on user input. It utilizes algorithms and data stored within the application to provide relevant stock suggestions.
+    ```bash
+    git clone https://github.com/BinaleGit/yahoo_fa_graf_search.git
+    cd yahoo_fa_graf_search/backend
+    ```
 
-## stock_routes.py
+2. **Create and Activate a Virtual Environment**
 
-Manages API routes for retrieving detailed stock information, enabling search functionalities, and fetching all stocks available in the database. This file provides endpoints for CRUD (Create, Read, Update, Delete) operations related to stock data.
+    ```bash
+    python -m venv myenv
+    source myenv/bin/activate  # On Windows, use `myenv\Scripts\activate`
+    ```
 
-## rest_routes.py
+3. **Install Dependencies**
 
-Provides RESTful API endpoints specifically designed for fetching detailed stock data from the application's database. These endpoints adhere to REST principles for efficient data retrieval.
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-## graph_routes.py
+4. **Run the Flask Application**
 
-Handles API routes responsible for fetching historical stock data, facilitating graphical representation and analysis. It provides endpoints to retrieve historical stock prices and volumes for visualization purposes.
+    ```bash
+    python app.py
+    ```
 
-## stock_model.py
+### Frontend
 
-Implements functionality to fetch and store stock symbols from indices like S&P 500 and TA-125. This module enhances the application's data retrieval capabilities by ensuring up-to-date and accurate stock information.
+1. **Navigate to the Frontend Directory**
 
-## file_scraper/
+    ```bash
+    cd ../stock-dashboard
+    ```
 
-Directory containing scripts responsible for scraping stock symbols from various sources such as Wikipedia, enhancing the application's database with updated and relevant stock data.
+2. **Install Dependencies**
 
-- **tase_scraper.py**: Scrapes TASE (Tel Aviv Stock Exchange) stock symbols from Wikipedia. It parses HTML content to extract stock symbols and stores them in the application's database.
-- **sp500_scraper.py**: Scrapes S&P 500 stock symbols from Wikipedia. It retrieves stock symbols from a predefined list and updates the database with new entries.
-- **stock_service.py**: Manages stock symbols and data retrieval, including CSV handling. This script interacts with CSV files to import/export stock data and manages stock-related operations within the application.
+    ```bash
+    npm install
+    ```
 
-# Contributing
+3. **Start the React Application**
 
-Guidelines for contributing to the project, if applicable. Include information about how to report issues, propose features, and submit pull requests.
+    ```bash
+    npm start
+    ```
 
-# License
+## API Endpoints
 
-Information about the project's license. Specify the license type (e.g., MIT, Apache 2.0) and include any additional terms or disclaimers.
+### Educational Resources
 
-# Authors
+- `GET /api/edu/articles`: Fetch educational articles.
+- `GET /api/edu/tutorials`: Fetch tutorials.
+- `GET /api/edu/glossary`: Fetch glossary terms.
+- `GET /api/edu/videos`: Fetch educational videos.
 
-List of authors or contributors to the project. Include their names and, if applicable, their roles or contributions to the project.
+### Stock Data
 
-# Acknowledgments
+- `GET /api/stock/<symbol>`: Retrieve detailed stock information for the given symbol.
+- `GET /api/stock/search`: Search for stocks based on a query.
+- `GET /api/stock/all_stocks`: Retrieve a list of all available stocks.
 
-Acknowledgments or credits to anyone whose work or contributions have been instrumental in the project. This section may include mentions of libraries, frameworks, or individuals who provided inspiration or support.
+### Stock Data Graphs and Reports
 
-# Additional Notes
+- `GET /api/graph/<symbol>`: Get graphical representation of stock data.
+- `POST /api/graph/report/<symbol>`: Generate and download a BI report for the specified symbol.
 
-Any additional notes or information relevant to the project that may assist users or developers in understanding its purpose, scope, or implementation details.
+### Suggestions
+
+- `GET /api/suggestions/<user_input>`: Get stock suggestions based on user input.
+
+### News
+
+- `GET /news/google`: Retrieve news articles from Google News.
+- `GET /news/yahoo`: Retrieve news articles from Yahoo Finance.
+- `POST /clear_cache`: Clear the news cache.
