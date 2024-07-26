@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './styles/index.css';
 import reportWebVitals from './reportWebVitals';
 import './styles/tailwind.css';
 import { BrowserRouter } from 'react-router-dom';

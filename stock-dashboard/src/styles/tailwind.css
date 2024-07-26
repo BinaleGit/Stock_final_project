@@ -6,7 +6,83 @@
   body {
     @apply bg-dark-bg text-dark-text;
   }
+
   .loader {
-    @apply border-8 border-t-8 border-gray-200 border-t-blue-500 rounded-full w-16 h-16 animate-spin;
+    @apply border-8 border-t-8 border-gray-200 text-primary rounded-full w-16 h-16 animate-spin;
   }
+}
+
+@layer utilities {
+  .common-container-curved-box {
+    border-top-right-radius: 300px;
+    border-bottom-width: 0.5cap
+  }
+
+  .button-curved-box {
+    border-top-right-radius: 20px;
+    border-bottom-width: 0.1cap
+  }
+
+  .curves-for-stuff{
+    border-top-right-radius: 300px;
+    border-bottom-width: 0.5cap
+
+  }
+}
+
+
+
+
+.common-input {
+  @apply block w-full border border-gray-600 rounded-md p-2 bg-dark-bg text-dark-text curves-for-stuff;
+}
+
+.common-container {
+  @apply p-5 bg-dark-card shadow-xl transition-all duration-300 ease-in-out common-container-curved-box p-4 ;
+
+}
+
+
+
+
+.common-button {
+  @apply text-white py-2 px-4 rounded-md mr-2 hover:bg-slate-900 transition duration-300 mb-2 button-curved-box ;
+}
+
+.difference-button {
+  @apply text-white py-2 px-4 rounded-md mr-2 hover:bg-slate-900 transition duration-300 mb-2 button-curved-box;
+}
+
+
+.report-button {
+  @apply text-white py-2 px-4 rounded-md mr-2 hover:bg-slate-900 transition duration-300 mb-2 button-curved-box;
+}
+
+
+
+
+
+/* NORMAL ASS CSS ALERT!!!, COULDN'T FIGURE OUT HOW TO DO IT WITH CSS SO DID IT WITH CSS */
+.old-graph,
+.new-graph {
+  width: 90%;
+  margin: 20px 0;
+}
+
+.both-graphs {
+  display: flex;
+  justify-content: space-between;
+  width: 95%;
+}
+
+.both-graphs .old-graph,
+.both-graphs .new-graph {
+  width: 49%;
+}
+
+/* styles.css */
+
+/* Ensure Offcanvas has a higher z-index */
+.offcanvas {
+  z-index: 1050 !important;
 }
