@@ -10,7 +10,6 @@ import {
   ComposedChart,
   Bar,
 } from "recharts";
-import { saveAs } from "file-saver";
 import Loader from "../components/Loader";
 import SearchInput from "../components/SearchInput";
 import { fetchData, fetchSuggestions, generateBIReport } from "../APIS/utils";
@@ -24,9 +23,14 @@ const OldGraph = () => {
   const [suggestions, setSuggestions] = useState([]);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
-  const [timeline, setTimeline] = useState("1y"); // Add state for timeline
+  const [timeline, setTimeline] = useState("1y");
 
   const fetchGraphData = useCallback(async () => {
+    if (!symbol) {
+      console.log("Symbol is undefined");
+      return;
+    }
+    console.log(`Fetching data for symbol: ${symbol}`);
     try {
       const data = await fetchData(symbol, startDate, endDate, timeline);
       setData(data);
@@ -41,21 +45,39 @@ const OldGraph = () => {
     return () => clearInterval(interval);
   }, [fetchGraphData]);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = async (e) => {
     const input = e.target.value;
     setQuery(input);
     if (input.length > 1) {
-      fetchSuggestions(input).then(setSuggestions);
+      const fetchedSuggestions = await fetchSuggestions(input);
+      console.log("Fetched suggestions:", fetchedSuggestions);
+      setSuggestions(fetchedSuggestions);
     } else {
       setSuggestions([]);
     }
   };
 
   const handleSuggestionClick = (suggestion) => {
-    setSymbol(suggestion.symbol);
-    setQuery(suggestion.symbol);
+    console.log("Suggestion clicked:", suggestion);
+    if (typeof suggestion === 'string') {
+      setSymbol(suggestion);
+    } else if (suggestion && suggestion.symbol) {
+      setSymbol(suggestion.symbol);
+    } else {
+      console.error("Invalid suggestion structure:", suggestion);
+      return;
+    }
+    setQuery(suggestion.symbol || suggestion);
     setSuggestions([]);
+    fetchGraphData();
   };
+
+  useEffect(() => {
+    if (symbol) {
+      console.log(`Symbol changed to: ${symbol}`);
+      fetchGraphData();
+    }
+  }, [symbol, fetchGraphData]);
 
   const handleTimelineChange = (period) => {
     setTimeline(period);
@@ -99,7 +121,6 @@ const OldGraph = () => {
   };
 
   const CustomBar = ({ x, y, width, height, fill, stroke, payload }) => {
-    // Calculate Y positions based on the height of the bar and the data values
     const openY =
       y +
       height -
@@ -127,7 +148,6 @@ const OldGraph = () => {
           fill={fill}
           stroke={stroke}
         />
-        {/* High and Low lines */}
         <line
           x1={x}
           x2={x + width}
@@ -144,7 +164,6 @@ const OldGraph = () => {
           stroke="red"
           strokeWidth={2}
         />
-        {/* Vertical line for High to Low range */}
         <line
           x1={x + width / 2}
           x2={x + width / 2}
@@ -153,7 +172,6 @@ const OldGraph = () => {
           stroke="#000"
           strokeWidth={1.5}
         />
-        {/* Open and Close lines */}
         <line
           x1={x}
           x2={x + width}
