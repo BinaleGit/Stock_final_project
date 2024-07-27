@@ -1,9 +1,8 @@
-// src/components/Footer.js
 import React from 'react';
 
 const Footer = () => {
   return (
-    <footer className="bg-dark-card text-dark-text py-4">
+    <footer className="bg-dark-card text-dark-text py-4 w-full">
       <div className="container mx-auto text-center">
         <p className="text-sm">&copy; 2024 Your Company. All rights reserved.</p>
         <p className="text-sm">

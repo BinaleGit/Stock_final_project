@@ -1,4 +1,3 @@
-// App.js
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './new-folder/Header';
@@ -10,7 +9,6 @@ import Articles from './new-folder/EducationalResources/Articles';
 import Tutorials from './new-folder/EducationalResources/Tutorials';
 import Glossary from './new-folder/EducationalResources/Glossary';
 import Videos from './new-folder/EducationalResources/Videos';
-import './styles/App.css';
 import './styles/pop.css';
 
 const App = () => {
@@ -32,10 +30,10 @@ const App = () => {
 
     return (
         <Router>
-            <div className="App">
+            <div className="flex flex-col min-h-screen">
                 <Header setStockData={handleSetStockData} /><br/>
                 {loading && <Loader />}
-                <div className={loading ? "blur-sm pointer-events-none" : ""}>
+                <div className={`flex-grow ${loading ? "blur-sm pointer-events-none" : ""}`}>
                     <Routes>
                         <Route path="/" element={stockData ? <StockInfo data={stockData} /> : (error && <p>No data available. Please enter a valid stock symbol.</p>)} />
                         <Route path="/articles" element={<Articles />} />
@@ -44,7 +42,7 @@ const App = () => {
                         <Route path="/videos" element={<Videos />} />
                     </Routes>
                     { <StockGraph setLoading={setLoading} /> }  
-                </div><br />
+                </div>
                 <Footer />
             </div>
         </Router>
