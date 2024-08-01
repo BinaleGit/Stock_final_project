@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 import OldGraph from "../../screens/OldGraph";
 import NewGraph from "../../screens/NewGraph";
@@ -38,12 +38,49 @@ const customStyles = {
   }),
 };
 
+const calculateMarketStatus = () => {
+  const now = new Date();
+  const day = now.getDay();
+  const hour = now.getHours();
+  const minute = now.getMinutes();
+
+  if (day === 0 || day === 6) {
+    return "The market is currently closed. It will reopen on Monday.";
+  } else if (hour < 9 || (hour === 9 && minute < 30)) {
+    const reopenTime = new Date(now);
+    reopenTime.setHours(9, 30, 0, 0);
+    const timeDiff = reopenTime - now;
+    const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+    const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+    return `The market is currently closed. It will reopen in ${hours} hours and ${minutes} minutes.`;
+  } else if (hour >= 16) {
+    const reopenTime = new Date(now);
+    reopenTime.setDate(now.getDate() + (day === 5 ? 3 : 1));
+    reopenTime.setHours(9, 30, 0, 0);
+    const timeDiff = reopenTime - now;
+    const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+    const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+    return `The market is currently closed. It will reopen in ${hours} hours and ${minutes} minutes.`;
+  } else {
+    return "The market is currently open.";
+  }
+};
+
 const StockGraph = () => {
   const [selectedOption, setSelectedOption] = useState(options[0]);
+  const [marketStatus, setMarketStatus] = useState('');
 
   const handleDropdownChange = (option) => {
     setSelectedOption(option);
   };
+
+  useEffect(() => {
+    setMarketStatus(calculateMarketStatus());
+    const interval = setInterval(() => {
+      setMarketStatus(calculateMarketStatus());
+    }, 60000); // Update market status every minute
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div>
@@ -55,6 +92,9 @@ const StockGraph = () => {
           styles={customStyles}
           className="block w-48"
         />
+      </div>
+      <div className="text-center text-xl font-semibold my-2">
+        {marketStatus}
       </div>
       <div className="flex flex-col items-center opacity-100">
         {selectedOption.value === 'first' && (

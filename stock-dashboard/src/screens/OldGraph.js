@@ -10,6 +10,7 @@ import {
   ComposedChart,
   Bar,
 } from "recharts";
+import axios from 'axios';
 import Loader from "../components/Loader";
 import SearchInput from "../components/SearchInput";
 import { fetchData, fetchSuggestions, generateBIReport } from "../APIS/utils";
@@ -24,6 +25,8 @@ const OldGraph = () => {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [timeline, setTimeline] = useState("1y");
+  const [currentPrice, setCurrentPrice] = useState(null);
+  const [priceChangeColor, setPriceChangeColor] = useState('');
 
   const fetchGraphData = useCallback(async () => {
     if (!symbol) {
@@ -39,11 +42,55 @@ const OldGraph = () => {
     }
   }, [symbol, startDate, endDate, timeline]);
 
+  const fetchCurrentPrice = useCallback(async (symbol) => {
+    try {
+      const response = await axios.post('http://localhost:5000/api/current_price', { symbol });
+      const data = response.data;
+
+      if (data && data.current_price) {
+        const newPrice = data.current_price;
+
+        setCurrentPrice(prevCurrentPrice => {
+          if (prevCurrentPrice !== null) {
+            if (newPrice > prevCurrentPrice) {
+              setPriceChangeColor('#7fff54');
+              setTimeout(() => {
+                setPriceChangeColor('');
+              }, 1000);
+            } else if (newPrice < prevCurrentPrice) {
+              setPriceChangeColor('#ff5754');
+              setTimeout(() => {
+                setPriceChangeColor('');
+              }, 1000);
+            }
+          }
+
+          console.log(`Current price: ${newPrice} | Previous price: ${prevCurrentPrice}`);
+          return newPrice;
+        });
+      } else {
+        console.error('Error fetching current price: Unexpected data format');
+      }
+    } catch (error) {
+      console.error('Error fetching current price:', error);
+    }
+  }, []);
+
   useEffect(() => {
     fetchGraphData();
     const interval = setInterval(fetchGraphData, 60000);
     return () => clearInterval(interval);
   }, [fetchGraphData]);
+
+  useEffect(() => {
+    if (symbol) {
+      console.log(`Symbol changed to: ${symbol}`);
+      fetchGraphData();
+      fetchCurrentPrice(symbol);
+      const priceInterval = setInterval(() => fetchCurrentPrice(symbol), 3000);
+      return () => clearInterval(priceInterval);
+    }
+  }, [symbol, fetchGraphData, fetchCurrentPrice]);
 
   const handleInputChange = async (e) => {
     const input = e.target.value;
@@ -70,14 +117,8 @@ const OldGraph = () => {
     setQuery(suggestion.symbol || suggestion);
     setSuggestions([]);
     fetchGraphData();
+    fetchCurrentPrice(suggestion.symbol || suggestion);
   };
-
-  useEffect(() => {
-    if (symbol) {
-      console.log(`Symbol changed to: ${symbol}`);
-      fetchGraphData();
-    }
-  }, [symbol, fetchGraphData]);
 
   const handleTimelineChange = (period) => {
     setTimeline(period);
@@ -242,6 +283,9 @@ const OldGraph = () => {
             suggestions={suggestions}
             onSelect={handleSuggestionClick}
           />
+          <div className="current-price-container mt-2" style={{ backgroundColor: priceChangeColor }}>
+            <h2 className="text-xl">Current Price: {currentPrice !== null ? `$${currentPrice}` : 'Loading...'}</h2>
+          </div>
         </div>
         <div className="flex flex-col gap-2">
           <div className="flex items-center ">
