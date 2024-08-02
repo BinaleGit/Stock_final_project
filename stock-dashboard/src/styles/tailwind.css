@@ -14,8 +14,9 @@
 
 @layer utilities {
   .common-container-curved-box {
-    border-top-right-radius: 300px;
-    border-bottom-width: 0.5cap
+    border-top-right-radius: 250px;
+    border-bottom-width: 0.5cap;
+    padding-bottom: 50px;
   }
 
   .button-curved-box {
@@ -34,7 +35,7 @@
 
 
 .common-input {
-  @apply block w-full border border-gray-600 rounded-md p-2 bg-dark-bg text-dark-text curves-for-stuff;
+  @apply block w-32 border border-gray-600 rounded-md p-2 bg-dark-bg text-dark-text curves-for-stuff;
 }
 
 .common-container {
@@ -62,23 +63,7 @@
 
 
 
-/* NORMAL ASS CSS ALERT!!!, COULDN'T FIGURE OUT HOW TO DO IT WITH CSS SO DID IT WITH CSS */
-.old-graph,
-.new-graph {
-  width: 90%;
-  margin: 20px 0;
-}
 
-.both-graphs {
-  display: flex;
-  justify-content: space-between;
-  width: 95%;
-}
-
-.both-graphs .old-graph,
-.both-graphs .new-graph {
-  width: 49%;
-}
 
 /* styles.css */
 

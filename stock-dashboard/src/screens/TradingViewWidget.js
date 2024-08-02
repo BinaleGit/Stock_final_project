@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useState, memo } from 'react';
+import React, { useEffect, useRef, useState, useCallback, memo } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Loader from '../components/Loader';
+import SearchInput from '../components/SearchInput'; // Importing the SearchInput for consistent UI
 
 const TradingViewGraph = () => {
   const [startDate, setStartDate] = useState(new Date());
@@ -9,36 +10,39 @@ const TradingViewGraph = () => {
   const [symbol, setSymbol] = useState('AAPL');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [suggestions, setSuggestions] = useState([]); // Similar to OldGraph for symbol suggestions
 
   const container = useRef(null);
 
-  useEffect(() => {
-    const loadTradingViewScript = () => {
-      if (container.current) {
-        container.current.innerHTML = ''; // Clear previous content
-        const script = document.createElement('script');
-        script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
-        script.type = 'text/javascript';
-        script.async = true;
-        script.innerHTML = JSON.stringify({
-          autosize: true,
-          symbol: `NASDAQ:${symbol}`,
-          interval: 'D',
-          timezone: 'Etc/UTC',
-          theme: 'dark',
-          style: '1',
-          locale: 'en',
-          gridColor: 'rgba(255, 255, 255, 0.06)',
-          withdateranges: true,
-          hide_side_toolbar: false,
-          allow_symbol_change: true,
-          calendar: false,
-          support_host: 'https://www.tradingview.com'
-        });
-        container.current.appendChild(script);
-      }
-    };
+  const loadTradingViewScript = useCallback(() => {
+    if (container.current) {
+      container.current.innerHTML = ''; // Clear previous content
+      const script = document.createElement('script');
+      script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
+      script.type = 'text/javascript';
+      script.async = true;
+      script.innerHTML = JSON.stringify({
+        autosize: false, // Set to false to control the size manually
+        width: "100%", // Width of the widget
+        height: "800px", // Increase the height to make the widget larger
+        symbol: `NASDAQ:${symbol}`,
+        interval: 'D',
+        timezone: 'Etc/UTC',
+        theme: 'dark',
+        style: '1',
+        locale: 'en',
+        gridColor: 'rgba(255, 255, 255, 0.06)',
+        withdateranges: true,
+        hide_side_toolbar: false,
+        allow_symbol_change: true,
+        calendar: false,
+        support_host: 'https://www.tradingview.com'
+      });
+      container.current.appendChild(script);
+    }
+  }, [symbol]);
 
+  useEffect(() => {
     setLoading(true);
     try {
       loadTradingViewScript();
@@ -53,7 +57,18 @@ const TradingViewGraph = () => {
         container.current.innerHTML = ''; // Cleanup on unmount
       }
     };
-  }, [symbol]);
+  }, [symbol, loadTradingViewScript]);
+
+  const handleInputChange = async (e) => {
+    const input = e.target.value.toUpperCase();
+    setSymbol(input);
+    if (input.length > 1) {
+      // Placeholder for suggestion fetch logic
+      setSuggestions([]); // Update based on actual fetch logic
+    } else {
+      setSuggestions([]);
+    }
+  };
 
   if (loading) {
     return <Loader />;
@@ -64,35 +79,40 @@ const TradingViewGraph = () => {
   }
 
   return (
-    <div className="p-4 bg-dark-card rounded-lg shadow-lg">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+    <div className="common-container container mx-auto max-w-7xl p-40">
+      <div className="grid md:grid-cols-5 gap-20 mb-10">
         <div>
           <label className="block mb-2">Select Stock Symbol:</label>
-          <input
-            type="text"
+          <SearchInput
             value={symbol}
-            onChange={(e) => setSymbol(e.target.value.toUpperCase())}
-            className="block w-full border border-gray-600 rounded-md p-2 bg-dark-bg text-dark-text"
-            placeholder="Type stock symbol..."
+            onChange={handleInputChange}
+            suggestions={suggestions}
+            onSelect={setSymbol} // Assuming onSelect sets the symbol in SearchInput component
           />
         </div>
-        <div>
-          <label className="block mb-2">Start Date:</label>
-          <DatePicker
-            selected={startDate}
-            onChange={(date) => setStartDate(date)}
-            className="block w-full border border-gray-600 rounded-md p-2 bg-dark-bg text-dark-text"
-          />
-          <label className="block mb-2 mt-4">End Date:</label>
-          <DatePicker
-            selected={endDate}
-            onChange={(date) => setEndDate(date)}
-            className="block w-full border border-gray-600 rounded-md p-2 bg-dark-bg text-dark-text"
-          />
+        <div className="flex items-center space-x-4">
+          <div className="flex flex-col">
+            <label className="mb-2">Start Date:</label>
+            <DatePicker
+              selected={startDate}
+              onChange={(date) => setStartDate(date)}
+              className="common-input"
+            />
+          </div>
+          <div className="flex flex-col">
+            <label className="mb-2">End Date:</label>
+            <DatePicker
+              selected={endDate}
+              onChange={(date) => setEndDate(date)}
+              className="common-input"
+            />
+          </div>
         </div>
+
       </div>
-      <div className="tradingview-widget-container" ref={container} style={{ height: "500px", width: "100%" }}>
-        <div className="tradingview-widget-container__widget" style={{ height: "calc(100% - 32px)", width: "100%" }}></div>
+      <div className="tradingview-widget-container" ref={container} style={{ height: "400px", width: "100%" }}>
+        {/* The widget's container height is set to 800px */}
+        <div className="tradingview-widget-container__widget" style={{ height: "100%", width: "100%" }}></div>
         <div className="tradingview-widget-copyright">
           <a href="https://www.tradingview.com/" rel="noopener nofollow" target="_blank">
             <span className="blue-text">Track all markets on TradingView</span>
