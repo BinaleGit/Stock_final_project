@@ -1,18 +1,31 @@
-"""
-Module for managing stock symbols and data retrieval.
-"""
-
 import csv
 import os
 import pandas as pd
 
-try:
-    from file_scraper.sp500_scraper import fetch_sp500_stocks
-    from file_scraper.tase_scraper import fetch_tase_stocks
-except ImportError:
-    # Handle ImportError appropriately if necessary
-    pass
+# Module for scraping S&P 500 stock symbols from Wikipedia.
+def fetch_sp500_stocks():
+    """
+    Scrape SP500 stock symbols from Wikipedia and return them as a list of dictionaries.
+    """
+    url_sp500 = "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
+    sp500_table = pd.read_html(url_sp500, header=0)
+    sp500_df = sp500_table[0]
+    sp500_stocks = sp500_df[['Symbol', 'Security']].to_dict(orient='records')
+    return sp500_stocks
 
+# Module for scraping TASE stock symbols from Wikipedia.
+def fetch_tase_stocks():
+    """
+    Scrape TASE stock symbols from Wikipedia and return them as a list of dictionaries.
+    """
+    url_tase = "https://en.wikipedia.org/wiki/TA-125_Index"
+    tase_table = pd.read_html(url_tase, header=0)
+    tase_df = tase_table[1]  # Assuming the relevant table is the second one
+    tase_df = tase_df.rename(columns={'Name': 'Security'})  # Rename 'Name' column to 'Security'
+    tase_stocks = tase_df[['Symbol', 'Security']].to_dict(orient='records')
+    return tase_stocks
+
+# Module for managing stock symbols and data retrieval.
 ALL_STOCKS = []
 CSV_FILE_PATH = "csv_files/all_stocks.csv"
 
@@ -51,9 +64,6 @@ def load_all_stocks():
             ALL_STOCKS.append({
                 "Symbol": row["Symbol"],
                 "Security": row["Security"],
-                "Exchange": row.get("Exchange", ""),
-                "Sector": row.get("Sector", ""),
-                "Industry": row.get("Industry", "")
             })
 
     # Fetch and append TASE stocks
