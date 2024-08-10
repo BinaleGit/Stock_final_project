@@ -38,30 +38,30 @@ const SearchBar = ({ setStockData }) => {
 
     return (
         <div className="relative w-full max-w-lg">
-            <div className="flex">
+            <div className="flex shadow-md">
                 <input
                     type="text"
                     value={query}
                     onChange={handleInputChange}
                     placeholder="Search for stocks..."
-                    className="flex-grow p-2 border border-r-0 border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                    className="flex-grow p-3 border border-r-0 border-gray-600 rounded-l-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary bg-dark-card text-white"
                 />
                 <button
                     onClick={() => handleSearch(query)}
-                    className="p-2 bg-primary text-white rounded-r-md hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="p-3 bg-primary text-white rounded-r-md hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary transition-colors duration-300"
                 >
                     Search
                 </button>
             </div>
             {suggestions.length > 0 && (
-                <ul className="absolute left-0 right-0 bg-white border border-gray-300 mt-1 max-h-48 overflow-y-auto rounded-md shadow-lg z-10">
+                <ul className="absolute left-0 right-0 bg-dark-card border border-gray-600 mt-1 max-h-48 overflow-y-auto rounded-md shadow-lg z-10 text-white">
                     {suggestions.map((suggestion, index) => (
                         <li
                             key={`${suggestion.symbol}-${index}`}
                             onClick={() => handleSearch(suggestion.symbol)}
-                            className="p-2 cursor-pointer hover:bg-gray-200 text-primary"
+                            className="p-3 cursor-pointer hover:bg-gray-700 transition-colors duration-300"
                         >
-                            {suggestion.symbol} - {suggestion.name}
+                            <span className="font-semibold">{suggestion.symbol}</span> - {suggestion.name}
                         </li>
                     ))}
                 </ul>

@@ -19,27 +19,64 @@ const GraphSelector = () => {
   };
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center py-6">
       <Select 
         options={options} 
         value={selectedOption} 
         onChange={handleSelectChange} 
         className="mb-4 w-full md:w-1/2"
+        styles={{
+          control: (base) => ({
+            ...base,
+            backgroundColor: '#2c3e50',
+            borderColor: '#34495e',
+            color: '#ecf0f1',
+            fontSize: '16px',
+            padding: '5px'
+          }),
+          menu: (base) => ({
+            ...base,
+            backgroundColor: '#2c3e50',
+            color: '#ecf0f1'
+          }),
+          option: (provided, state) => ({
+            ...provided,
+            backgroundColor: state.isSelected ? '#34495e' : '#2c3e50',
+            color: '#ecf0f1',
+            padding: '10px'
+          }),
+          singleValue: (provided) => ({
+            ...provided,
+            color: '#ecf0f1',
+          }),
+        }}
       />
-      <div className="flex flex-col items-center">
-        {selectedOption.value === 'first' && <OldGraph />}
-        {selectedOption.value === 'second' && <NewGraph />}
+      <div className="flex flex-col items-center w-full">
+        {selectedOption.value === 'first' && (
+          <div>
+            <OldGraph />
+          </div>
+        )}
+        {selectedOption.value === 'second' && (
+          <div>
+            <NewGraph />
+          </div>
+        )}
         {selectedOption.value === 'both' && (
-          <div className="flex justify-center gap-4 w-full">
-            <div className="w-1/2">
+          <div className="flex flex-col md:flex-row justify-center gap-4 w-full">
+            <div className="w-full md:w-1/2 bg-dark-card p-4 rounded-lg shadow-md">
               <OldGraph />
             </div>
-            <div className="w-1/2">
+            <div className="w-full md:w-1/2 bg-dark-card p-4 rounded-lg shadow-md">
               <NewGraph />
             </div>
           </div>
         )}
-        {selectedOption.value === 'tradingview' && <TradingViewWidget />}
+        {selectedOption.value === 'tradingview' && (
+          <div className="w-full md:w-3/4 lg:w-2/3 bg-dark-card p-4 rounded-lg shadow-md">
+            <TradingViewWidget />
+          </div>
+        )}
       </div>
     </div>
   );

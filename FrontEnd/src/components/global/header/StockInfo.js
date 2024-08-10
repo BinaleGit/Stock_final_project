@@ -1,14 +1,14 @@
 import React from 'react';
 
-const formatNumber = (num, showFullNumbers) => showFullNumbers ? num : Math.floor(num);
+const formatNumber = (num, showFullNumbers) => showFullNumbers ? num : num.toFixed(3);
 
 const StockInfo = ({ data, showFullNumbers }) => {
     if (data.error) {
         return <p>{data.error}</p>;
     }
     return (
-        <div>
-            <h2>{data.name} ({data.symbol})</h2>
+        <div className="bg-dark-card p-4 rounded-lg shadow-md">
+            <h2 className="text-xl font-semibold">{data.name} ({data.symbol})</h2>
             <p>Date: {data.date}</p>
             <p>Open: {formatNumber(data.open, showFullNumbers)}</p>
             <p>High: {formatNumber(data.high, showFullNumbers)}</p>
