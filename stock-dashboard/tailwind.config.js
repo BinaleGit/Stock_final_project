@@ -9,7 +9,7 @@ module.exports = {
         'dark-bg': '#1e293b', // Deep blue-gray for a calm dark mode background
         'dark-card': '#334155', // Slightly lighter blue-gray for card backgrounds
         'dark-text': '#b5dcff', // Light blue for text, providing a soft contrast
-        'primary': '#3d91ff', // Bright sky blue for primary elements
+        'primary': '#4494fc', // Bright sky blue for primary elements
         'secondary': '#8fbfff', // Bright sky blue for primary elements
 
       },

@@ -1,13 +1,13 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import Header from './components/Header';
-import StockInfo from './components/StockInfo';
-import StockGraph from './components/Graph/StockGraph';
-import Articles from './components/EducationalResources/Articles';
-import Tutorials from './components/EducationalResources/Tutorials';
-import Videos from './components/EducationalResources/Videos';
-import Loader from './components/Loader';
-import Footer from './components/Footer';
+import Header from './components/global/header/Header';
+import StockInfo from './components/global/header/StockInfo';
+import StockGraph from './components/graph/StockGraph';
+import Articles from './screens/Articles';
+import Tutorials from './screens/Tutorials';
+import Videos from './screens/Videos';
+import Loader from './components/shared/Loader';
+import Footer from './components/global/Footer';
 
 const RoutesConfig = ({ setStockData, stockData, error, loading, setLoading }) => {
   const handleSetStockData = (data) => {

@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState, useCallback, memo } from 'react';
+ import React, { useEffect, useRef, useState, useCallback, memo } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import Loader from '../Loader';
-import SearchInput from '../SearchInput'; // Importing the SearchInput for consistent UI
+import Loader from '../shared/Loader';
+import SearchInput from '../shared/SearchInput'; // Importing the SearchInput for consistent UI
 
 const TradingViewGraph = () => {
   const [startDate, setStartDate] = useState(new Date());
@@ -81,33 +81,6 @@ const TradingViewGraph = () => {
   return (
     <div className="common-container container mx-auto max-w-7xl p-40">
       <div className="grid md:grid-cols-5 gap-20 mb-10">
-        <div>
-          <label className="block mb-2">Select Stock Symbol:</label>
-          <SearchInput
-            value={symbol}
-            onChange={handleInputChange}
-            suggestions={suggestions}
-            onSelect={setSymbol} // Assuming onSelect sets the symbol in SearchInput component
-          />
-        </div>
-        <div className="flex items-center space-x-4">
-          <div className="flex flex-col">
-            <label className="mb-2">Start Date:</label>
-            <DatePicker
-              selected={startDate}
-              onChange={(date) => setStartDate(date)}
-              className="common-input"
-            />
-          </div>
-          <div className="flex flex-col">
-            <label className="mb-2">End Date:</label>
-            <DatePicker
-              selected={endDate}
-              onChange={(date) => setEndDate(date)}
-              className="common-input"
-            />
-          </div>
-        </div>
 
       </div>
       <div className="tradingview-widget-container" ref={container} style={{ height: "400px", width: "100%" }}>
