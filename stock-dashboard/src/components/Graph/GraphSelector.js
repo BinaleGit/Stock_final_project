@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Select from 'react-select';
 import OldGraph from "../../screens/OldGraph";
 import NewGraph from "../../screens/NewGraph";
-import TradingViewWidget from "../../screens/TradingViewWidget";
+import TradingViewWidget from "../../components/widgets/TradingViewWidget";
 
 const options = [
   { value: 'first', label: 'Show the first graph' },

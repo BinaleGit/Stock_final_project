@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import GraphSelector from './GraphSelector'; // Adjust the path as needed
-import StockTimeline from "../../screens/StockTimeline";
-import SymbolOverview from "../../screens/SymbolOverview";
-import UsdIlsQuote from "../../screens/UsdIlsQuote";
+import StockTimeline from "../widgets/StockTimeline";
+import SymbolOverview from "../widgets/SymbolOverview";
+import UsdIlsQuote from "../widgets/UsdIlsQuote";
 
 const calculateMarketStatus = () => {
   const now = new Date();

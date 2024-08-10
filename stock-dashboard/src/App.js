@@ -7,7 +7,6 @@ import Loader from './new-folder/Loader';
 import Footer from './new-folder/Footer';
 import Articles from './new-folder/EducationalResources/Articles';
 import Tutorials from './new-folder/EducationalResources/Tutorials';
-import Glossary from './new-folder/EducationalResources/Glossary';
 import Videos from './new-folder/EducationalResources/Videos';
 import './styles/pop.css';
 
@@ -38,7 +37,6 @@ const App = () => {
                         <Route path="/" element={stockData ? <StockInfo data={stockData} /> : (error && <p>No data available. Please enter a valid stock symbol.</p>)} />
                         <Route path="/articles" element={<Articles />} />
                         <Route path="/tutorials" element={<Tutorials />} />
-                        <Route path="/glossary" element={<Glossary />} />
                         <Route path="/videos" element={<Videos />} />
                     </Routes>
                     { <StockGraph setLoading={setLoading} /> }  

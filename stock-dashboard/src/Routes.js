@@ -5,7 +5,6 @@ import StockInfo from './components/StockInfo';
 import StockGraph from './components/Graph/StockGraph';
 import Articles from './components/EducationalResources/Articles';
 import Tutorials from './components/EducationalResources/Tutorials';
-import Glossary from './components/EducationalResources/Glossary';
 import Videos from './components/EducationalResources/Videos';
 import Loader from './components/Loader';
 import Footer from './components/Footer';
@@ -42,10 +41,6 @@ const RoutesConfig = ({ setStockData, stockData, error, loading, setLoading }) =
           <Route
             path="/tutorials"
             element={<Tutorials />}
-          />
-          <Route
-            path="/glossary"
-            element={<Glossary />}
           />
           <Route
             path="/videos"
