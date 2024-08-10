@@ -11,9 +11,9 @@ import {
   Line,
 } from "recharts";
 import axios from 'axios';
-import Loader from "../components/Loader";
-import SearchInput from "../components/SearchInput";
-import { fetchData, fetchSuggestions, generateBIReport } from "../APIS/utils";
+import Loader from "../shared/Loader";
+import SearchInput from "../shared/SearchInput";
+import { fetchData, fetchSuggestions, generateBIReport } from "../../APIS/utils";
 
 const NewGraph = () => {
   const [data, setData] = useState(null);

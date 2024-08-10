@@ -14,18 +14,18 @@
 
 @layer utilities {
   .common-container-curved-box {
-    border-top-right-radius: 250px;
+    border-top-right-radius: 50px;
     border-bottom-width: 0.5cap;
     padding-bottom: 50px;
   }
 
   .button-curved-box {
-    border-top-right-radius: 20px;
+    border-top-right-radius: 12px;
     border-bottom-width: 0.1cap
   }
 
   .curves-for-stuff{
-    border-top-right-radius: 300px;
+    border-top-right-radius: 20px;
     border-bottom-width: 0.5cap
 
   }

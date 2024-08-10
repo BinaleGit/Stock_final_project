@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import Select from 'react-select';
-import OldGraph from "../../screens/OldGraph";
-import NewGraph from "../../screens/NewGraph";
-import TradingViewWidget from "../../screens/TradingViewWidget";
+import OldGraph from "./OldGraph";
+import NewGraph from "./NewGraph";
+import TradingViewWidget from "./TradingViewWidget";
 
 const options = [
   { value: 'first', label: 'Show the first graph' },
