@@ -9,6 +9,8 @@ import Articles from './new-folder/EducationalResources/Articles';
 import Tutorials from './new-folder/EducationalResources/Tutorials';
 import Videos from './new-folder/EducationalResources/Videos';
 import './styles/pop.css';
+import About from './screens/About';
+
 
 const App = () => {
     const [stockData, setStockData] = useState(null);
@@ -38,6 +40,8 @@ const App = () => {
                         <Route path="/articles" element={<Articles />} />
                         <Route path="/tutorials" element={<Tutorials />} />
                         <Route path="/videos" element={<Videos />} />
+                        <Route path="/about" element={<About />} /> {/* Added About route */}
+
                     </Routes>
                     { <StockGraph setLoading={setLoading} /> }  
                 </div>

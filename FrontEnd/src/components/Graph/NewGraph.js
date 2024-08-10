@@ -14,6 +14,8 @@ import axios from 'axios';
 import Loader from "../shared/Loader";
 import SearchInput from "../shared/SearchInput";
 import { fetchData, fetchSuggestions, generateBIReport } from "../../APIS/utils";
+import { calculateMarketStatus } from './StockGraph'; // Adjust the path as needed
+
 
 const NewGraph = () => {
   const [data, setData] = useState(null);
@@ -27,6 +29,8 @@ const NewGraph = () => {
   const [inputValue, setInputValue] = useState("");
   const [currentPrice, setCurrentPrice] = useState(null);
   const [priceChangeColor, setPriceChangeColor] = useState('');
+  const [hasFetched, setHasFetched] = useState(false); // Track if fetching has occurred
+
 
   const fetchGraphData = useCallback(async () => {
     try {
@@ -63,6 +67,8 @@ const NewGraph = () => {
           console.log(`Current price: ${newPrice} | Previous price: ${prevCurrentPrice}`);
           return newPrice;
         });
+
+        setHasFetched(true); // Indicate that the price has been fetched
       } else {
         console.error('Error fetching current price: Unexpected data format');
       }
@@ -78,15 +84,18 @@ const NewGraph = () => {
   }, [fetchGraphData]);
 
   useEffect(() => {
-    if (symbol) {
+    const { isOpen } = calculateMarketStatus();
+
+    if (symbol && !hasFetched) {
       fetchGraphData();
-      fetchCurrentPrice(symbol);
-      const priceInterval = setInterval(() => fetchCurrentPrice(symbol), 3000);
-      return () => {
-        clearInterval(priceInterval);
-      };
+      fetchCurrentPrice(symbol); // Always fetch once, regardless of market status
+
+      if (isOpen) {
+        const priceInterval = setInterval(() => fetchCurrentPrice(symbol), 3000);
+        return () => clearInterval(priceInterval);
+      }
     }
-  }, [symbol, fetchGraphData, fetchCurrentPrice]);
+  }, [symbol, fetchGraphData, fetchCurrentPrice, hasFetched]);
 
   const handleInputChange = (e) => {
     setInputValue(e.target.value);

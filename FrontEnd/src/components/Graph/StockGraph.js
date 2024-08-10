@@ -4,21 +4,23 @@ import StockTimeline from "../widgets/StockTimeline";
 import SymbolOverview from "../widgets/SymbolOverview";
 import UsdIlsQuote from "../widgets/UsdIlsQuote";
 
-const calculateMarketStatus = () => {
+// StockGraph.js
+
+export const calculateMarketStatus = () => {
   const now = new Date();
   const day = now.getDay();
   const hour = now.getHours();
   const minute = now.getMinutes();
 
   if (day === 0 || day === 6) {
-    return "The market is currently closed. It will reopen on Monday.";
+    return { message: "The market is currently closed. It will reopen on Monday.", isOpen: false };
   } else if (hour < 9 || (hour === 9 && minute < 30)) {
     const reopenTime = new Date(now);
     reopenTime.setHours(9, 30, 0, 0);
     const timeDiff = reopenTime - now;
     const hours = Math.floor(timeDiff / (1000 * 60 * 60));
     const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-    return `The market is currently closed. It will reopen in ${hours} hours and ${minutes} minutes.`;
+    return { message: `The market is currently closed. It will reopen in ${hours} hours and ${minutes} minutes.`, isOpen: false };
   } else if (hour >= 16) {
     const reopenTime = new Date(now);
     reopenTime.setDate(now.getDate() + (day === 5 ? 3 : 1));
@@ -26,14 +28,18 @@ const calculateMarketStatus = () => {
     const timeDiff = reopenTime - now;
     const hours = Math.floor(timeDiff / (1000 * 60 * 60));
     const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-    return `The market is currently closed. It will reopen in ${hours} hours and ${minutes} minutes.`;
+    return { message: `The market is currently closed. It will reopen in ${hours} hours and ${minutes} minutes.`, isOpen: false };
   } else {
-    return "The market is currently open.";
+    return { message: "The market is currently open.", isOpen: true };
   }
 };
 
+// Rest of your StockGraph component...
+
+
+
 const StockGraph = () => {
-  const [marketStatus, setMarketStatus] = useState('');
+  const [marketStatus, setMarketStatus] = useState({ message: '', isOpen: false });
 
   useEffect(() => {
     setMarketStatus(calculateMarketStatus());
@@ -46,7 +52,7 @@ const StockGraph = () => {
   return (
     <div>
       <div className="flex justify-center my-4">
-        {marketStatus}
+        {marketStatus.message}
       </div>
       <GraphSelector />
       <div className="flex flex-col items-center gap-4 p-4 dark:bg-dark-card dark:text-dark-text">
