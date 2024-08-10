@@ -5,7 +5,6 @@ from routes.suggestion_routes import suggestion_bp
 from routes.graph_routes import graph_bp
 from routes.edu_routes import edu_bp
 from routes.current_price import current_price_bp  # Import the new current price blueprint
-from NEWS.scraper_factory import ScraperFactory
 from enums import NewsSource
 
 app = Flask(__name__)
