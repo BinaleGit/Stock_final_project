@@ -5,8 +5,8 @@ import "react-toastify/dist/ReactToastify.css";
 import SearchBar from "./SearchBar";
 import Offcanvas from "./Offcanvas";
 import StockInfo from "./StockInfo";
-import TickerTapeWidget from './TickerTapeWidget'; // Import the TickerTapeWidget component
-import batstockLogo from "./assets/batstock.png";
+import TickerTapeWidget from '../../widgets/TickerTapeWidget'; // Import the TickerTapeWidget component
+import batstockLogo from "../../../styles/img/batstock.png";
 
 const Header = () => {
   const [isOffcanvasOpen, setOffcanvasOpen] = useState(false);
@@ -29,7 +29,7 @@ const Header = () => {
 
   const showStockToast = (stock) => {
     toast.info(`${stock.symbol}: Click for details`, {
-      position: "top-right",
+      position: "top-left", // Changed position to top-left
       autoClose: false,
       hideProgressBar: false,
       closeOnClick: false,
@@ -39,7 +39,7 @@ const Header = () => {
       onClick: () => reopenOffcanvas(stock),
     });
   };
-
+  
   const reopenOffcanvas = (stock) => {
     setStockData(stock);
     setOffcanvasOpen(true);
@@ -77,9 +77,6 @@ const Header = () => {
                 </Link>
                 <Link to="/tutorials" className="text-sm font-medium text-dark-text transition-all duration-200 lg:text-base hover:text-primary focus:text-primary">
                   Tutorials
-                </Link>
-                <Link to="/glossary" className="text-sm font-medium text-dark-text transition-all duration-200 lg:text-base hover:text-primary focus:text-primary">
-                  Glossary
                 </Link>
                 <Link to="/videos" className="text-sm font-medium text-dark-text transition-all duration-200 lg:text-base hover:text-primary focus:text-primary">
                   Videos
