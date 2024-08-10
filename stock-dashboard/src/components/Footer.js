@@ -6,13 +6,13 @@ const Footer = () => {
   const ifYouDeleteYouGay = () => atob(veryImportantCode);
 
   return (
-    <footer className="bg-dark-card text-dark-text py-8 w-full">
+    <footer className="bg-dark-card text-secondary py-8 w-full">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-center sm:text-left">
           <div>
             <h3 className="font-bold text-lg mb-3">About Us</h3>
             <p className="text-sm mb-4">Learn more about our mission and services.</p>
-            <button className="bg-transparent hover:bg-dark-text hover:text-dark-card text-sm font-semibold py-2 px-4 border border-dark-text rounded">
+            <button className="bg-transparent hover:bg-secondary hover:text-dark-card text-sm font-semibold py-2 px-4 border border-secondary rounded">
               Read More
             </button>
           </div>
@@ -41,11 +41,11 @@ const Footer = () => {
               <input
                 type="email"
                 placeholder="Enter your email"
-                className="text-sm p-2 rounded bg-transparent border border-dark-text"
+                className="text-sm p-2 rounded bg-transparent border border-secondary"
               />
               <button
                 type="submit"
-                className="bg-transparent hover:bg-dark-text hover:text-dark-card text-sm font-semibold py-2 px-4 border border-dark-text rounded mt-2"
+                className="bg-transparent hover:bg-secondary hover:text-dark-card text-sm font-semibold py-2 px-4 border border-secondary rounded mt-2"
               >
                 Subscribe
               </button>
