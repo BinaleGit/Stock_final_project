@@ -1,7 +1,6 @@
 import React from 'react';
 
 const TickerTapeWidget = () => {
-  // Widget configuration moved inside the component
   const tickerConfig = {
     symbols: [
       { proName: "NASDAQ:TSLA", title: "" },
@@ -20,26 +19,34 @@ const TickerTapeWidget = () => {
     colorTheme: "dark"
   };
 
-  // Construct the widget URL from the configuration
   const encodedParams = encodeURIComponent(JSON.stringify(tickerConfig));
   const baseUrl = "https://s.tradingview.com/embed-widget/ticker-tape/?locale=en#";
   const srcUrl = `${baseUrl}${encodedParams}`;
 
-  // Responsive iframe styles
   const iframeStyle = {
     width: '100%',
-    height: '45px', // Default height for larger screens
+    height: '45px',
     frameBorder: '0'
   };
 
-  // Media query to adjust iframe height on smaller screens
   const mobileStyle = window.matchMedia("(max-width: 768px)").matches ? { height: '80px' } : {};
 
   return (
-    <iframe
-      src={srcUrl}
-      style={{ ...iframeStyle, ...mobileStyle }}
-    ></iframe>
+    <div style={{ position: 'relative', width: '100%', height: '45px' }}>
+      <iframe
+        src={srcUrl}
+        style={{ ...iframeStyle, ...mobileStyle }}
+      ></iframe>
+      <div style={{
+        position: 'absolute',
+        top: '0', // Aligning to the top of the ticker
+        right: '0', // Positioned on the right side
+        width: '60px', // Adjust width to cover the logo
+        height: '45px', // Match the height of the ticker
+        backgroundColor: 'transparent', // Match this with your background
+        zIndex: 2, // Ensures it overlays the iframe
+      }}></div>
+    </div>
   );
 };
 

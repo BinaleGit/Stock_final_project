@@ -4,7 +4,7 @@ const UsdIlsQuote = () => {
   // Widget configuration moved inside the component
   const widgetConfig = {
     symbol: "FX_IDC:USDILS",
-    isTransparent: true, // Set background to transparent
+    isTransparent: true,
     width: "100%",
     colorTheme: "dark",
     height: 126,
@@ -29,15 +29,26 @@ const UsdIlsQuote = () => {
   };
 
   return (
-    <iframe 
-      scrolling="no" 
-      allowTransparency="true" 
-      frameBorder="0" 
-      src={srcUrl} 
-      title="single quote TradingView widget" 
-      lang="en" 
-      style={iframeStyle}
-    ></iframe>
+    <div style={{ position: 'relative', width: '100%', height: '126px' }}>
+      <iframe 
+        scrolling="no" 
+        allowTransparency="true" 
+        frameBorder="0" 
+        src={srcUrl} 
+        title="single quote TradingView widget" 
+        lang="en" 
+        style={iframeStyle}
+      ></iframe>
+      <div style={{
+        position: 'absolute',
+        top: '0',  // Positioned at the top
+        right: '0',  // Positioned on the right side
+        width: '60px', // Adjust width to cover the logo
+        height: '30px', // Adjust height to cover the logo
+        backgroundColor: 'transparent', // Match this with your background
+        zIndex: 2, // Ensures it overlays the iframe
+      }}></div>
+    </div>
   );
 };
 
