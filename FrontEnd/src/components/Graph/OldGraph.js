@@ -15,7 +15,7 @@ import Loader from "../shared/Loader";
 import SearchInput from "../shared/SearchInput";
 import { fetchData, fetchSuggestions, generateBIReport } from "../../APIS/utils";
 import { calculateMarketStatus } from './StockGraph'; // Adjust the path as needed
-
+import "./pricing.css"; // Import the CSS for styling
 
 const OldGraph = () => {
   const [data, setData] = useState(null);
@@ -28,9 +28,9 @@ const OldGraph = () => {
   const [endDate, setEndDate] = useState(new Date());
   const [timeline, setTimeline] = useState("1y");
   const [currentPrice, setCurrentPrice] = useState(null);
+  const [previousPrice, setPreviousPrice] = useState(null);
   const [priceChangeColor, setPriceChangeColor] = useState('');
-  const [hasFetched, setHasFetched] = useState(false); // Track if fetching has occurred
-
+  const [isPriceUp, setIsPriceUp] = useState(null);
 
   const fetchGraphData = useCallback(async () => {
     if (!symbol) {
@@ -54,54 +54,50 @@ const OldGraph = () => {
       if (data && data.current_price) {
         const newPrice = data.current_price;
 
-        setCurrentPrice(prevCurrentPrice => {
-          if (prevCurrentPrice !== null) {
-            if (newPrice > prevCurrentPrice) {
-              setPriceChangeColor('#7fff54');
-              setTimeout(() => {
-                setPriceChangeColor('');
-              }, 1000);
-            } else if (newPrice < prevCurrentPrice) {
-              setPriceChangeColor('#ff5754');
-              setTimeout(() => {
-                setPriceChangeColor('');
-              }, 1000);
-            }
-          }
+        // Only update if the new price is different from the previous price
+        if (newPrice !== currentPrice) {
+          setPreviousPrice(currentPrice);
+          setCurrentPrice(newPrice);
 
-          console.log(`Current price: ${newPrice} | Previous price: ${prevCurrentPrice}`);
-          return newPrice;
-        });
+          // Determine the price direction and set the corresponding state
+          const priceUp = newPrice > currentPrice;
+          setIsPriceUp(priceUp);
+          setPriceChangeColor(priceUp ? '#7fff54' : '#ff5754');
 
-        setHasFetched(true); // Indicate that the price has been fetched
+          // Reset the color after 1 second
+          setTimeout(() => {
+            setPriceChangeColor('');
+          }, 1000);
+        }
       } else {
         console.error('Error fetching current price: Unexpected data format');
       }
     } catch (error) {
       console.error('Error fetching current price:', error);
     }
-  }, []);
-
-  useEffect(() => {
-    fetchGraphData();
-    const interval = setInterval(fetchGraphData, 60000);
-    return () => clearInterval(interval);
-  }, [fetchGraphData]);
+  }, [currentPrice]);
 
   useEffect(() => {
     const { isOpen } = calculateMarketStatus();
 
-    if (symbol && !hasFetched) {
-      console.log(`Symbol changed to: ${symbol}`);
-      fetchGraphData();
-      fetchCurrentPrice(symbol); // Always fetch once, regardless of market status
+    // Always fetch data initially
+    fetchCurrentPrice(symbol); // Initial price fetch
 
-      if (isOpen) {
-        const priceInterval = setInterval(() => fetchCurrentPrice(symbol), 3000);
-        return () => clearInterval(priceInterval);
-      }
+    // Start interval for price fetching when the market is open
+    if (isOpen) {
+      const priceInterval = setInterval(() => {
+        fetchCurrentPrice(symbol);
+      }, 3000); // Fetch every 3 seconds
+
+      return () => clearInterval(priceInterval); // Cleanup on unmount
     }
-  }, [symbol, fetchGraphData, fetchCurrentPrice, hasFetched]);
+  }, [symbol, fetchCurrentPrice]);
+
+  useEffect(() => {
+    fetchGraphData();
+    const graphInterval = setInterval(fetchGraphData, 60000);
+    return () => clearInterval(graphInterval);
+  }, [fetchGraphData]);
 
   const handleInputChange = async (e) => {
     const input = e.target.value;
@@ -244,6 +240,24 @@ const OldGraph = () => {
     );
   };
 
+  const renderPriceChange = () => {
+    if (currentPrice !== null && previousPrice !== null) {
+      const priceChangeClass = isPriceUp ? 'price-up' : 'price-down';
+      const iconClass = isPriceUp ? 'icon-up' : 'icon-down';
+
+      return (
+        <div className="price-container">
+          <span className={priceChangeClass}>
+            {`$${currentPrice.toFixed(2)}`}
+          </span>
+          <span className={`${iconClass} ${priceChangeClass}`}></span>
+        </div>
+      );
+    }
+
+    return null;
+  };
+
   const renderGraph = () => {
     if (!data) {
       return <div className="text-center">No data available</div>;
@@ -294,8 +308,8 @@ const OldGraph = () => {
             suggestions={suggestions}
             onSelect={handleSuggestionClick}
           />
-          <div className="current-price-container mt-2" style={{ backgroundColor: priceChangeColor }}>
-            <h2 className="text-xl">Current Price: {currentPrice !== null ? `$${currentPrice}` : 'Loading...'}</h2>
+          <div className="current-price-container mt-2">
+            {renderPriceChange()}
           </div>
         </div>
         <div className="flex flex-col gap-2">

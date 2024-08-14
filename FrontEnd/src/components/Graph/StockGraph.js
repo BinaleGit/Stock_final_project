@@ -8,31 +8,46 @@ import UsdIlsQuote from "../widgets/UsdIlsQuote";
 
 export const calculateMarketStatus = () => {
   const now = new Date();
-  const day = now.getDay();
-  const hour = now.getHours();
-  const minute = now.getMinutes();
+  
+  // Convert to US Eastern Time
+  const nowEST = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+  
+  const day = nowEST.getDay(); // 0 = Sunday, 6 = Saturday
+  const hour = nowEST.getHours(); // 24-hour format
+  const minute = nowEST.getMinutes();
 
+  // Market is closed on weekends
   if (day === 0 || day === 6) {
     return { message: "The market is currently closed. It will reopen on Monday.", isOpen: false };
-  } else if (hour < 9 || (hour === 9 && minute < 30)) {
-    const reopenTime = new Date(now);
+  }
+  
+  // Market opens at 9:30 AM ET
+  else if (hour < 9 || (hour === 9 && minute < 30)) {
+    const reopenTime = new Date(nowEST);
     reopenTime.setHours(9, 30, 0, 0);
-    const timeDiff = reopenTime - now;
+    const timeDiff = reopenTime - nowEST;
     const hours = Math.floor(timeDiff / (1000 * 60 * 60));
     const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
     return { message: `The market is currently closed. It will reopen in ${hours} hours and ${minutes} minutes.`, isOpen: false };
-  } else if (hour >= 16) {
-    const reopenTime = new Date(now);
-    reopenTime.setDate(now.getDate() + (day === 5 ? 3 : 1));
+  }
+  
+  // Market closes at 4:00 PM ET
+  else if (hour >= 16) {
+    const reopenTime = new Date(nowEST);
+    reopenTime.setDate(nowEST.getDate() + (day === 5 ? 3 : 1)); // If it's Friday, reopen on Monday
     reopenTime.setHours(9, 30, 0, 0);
-    const timeDiff = reopenTime - now;
+    const timeDiff = reopenTime - nowEST;
     const hours = Math.floor(timeDiff / (1000 * 60 * 60));
     const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
     return { message: `The market is currently closed. It will reopen in ${hours} hours and ${minutes} minutes.`, isOpen: false };
-  } else {
+  }
+  
+  // Market is currently open
+  else {
     return { message: "The market is currently open.", isOpen: true };
   }
 };
+
 
 // Rest of your StockGraph component...
 

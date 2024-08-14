@@ -1,0 +1,34 @@
+.price-container {
+    display: flex;
+    align-items: center;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.price-up {
+    color: #7fff54; /* Green color for price increase */
+}
+
+.price-down {
+    color: #ff5754; /* Red color for price decrease */
+}
+
+.icon-up {
+    border: solid #7fff54;
+    border-width: 0 3px 3px 0;
+    display: inline-block;
+    padding: 3px;
+    transform: rotate(-135deg);
+    -webkit-transform: rotate(-135deg);
+    margin-left: 5px; /* Spacing between price and icon */
+}
+
+.icon-down {
+    border: solid #ff5754;
+    border-width: 0 3px 3px 0;
+    display: inline-block;
+    padding: 3px;
+    transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+    margin-left: 5px; /* Spacing between price and icon */
+}
