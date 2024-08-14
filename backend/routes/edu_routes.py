@@ -9,7 +9,6 @@ edu_bp = Blueprint('edu', __name__)
 
 # Dummy data for tutorials, glossary, and videos
 tutorials_data = [{"title": "Stock Market Basics", "url": "https://www.investopedia.com/articles/basics/06/invest1000.asp"}]
-glossary_data = [{"title": "Stock Market Basics", "url": "https://www.nasdaq.com/glossary"}]
 videos_data = [{"title": "How To Start Investing In Stocks", "embed_url": "https://www.youtube.com/embed/86rPBAnRCHc"}]
 
 
@@ -57,10 +56,6 @@ def get_articles():
 @edu_bp.route('/tutorials', methods=['GET'])
 def get_tutorials():
     return jsonify(tutorials_data)
-
-@edu_bp.route('/glossary', methods=['GET'])
-def get_glossary():
-    return jsonify(glossary_data)
 
 @edu_bp.route('/videos', methods=['GET'])
 def get_videos():
